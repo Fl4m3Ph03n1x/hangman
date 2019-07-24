@@ -11,6 +11,12 @@ defmodule Hangman.Game do
     field :used,        MapSet.t,     default: MapSet.new()
   end
 
+  @type tally :: %{
+    game_state: :already_used | :bad_guess | :good_guess | :lost | :won,
+    turns_left: pos_integer,
+    letters:    [String.t]
+  }
+
   ###############
   # Public API  #
   ###############
@@ -23,12 +29,14 @@ defmodule Hangman.Game do
   def new_game, do:
     new_game(Dictionary.random_word())
 
+  @spec make_move(Game.t, String.t) :: Game.t
   def make_move(%Game{game_state: state} = game, _guess)
   when state in [:won, :lost], do: game
 
   def make_move(game, guess), do:
     accept_move(game, guess, MapSet.member?(game.used, guess))
 
+  @spec tally(Game.t) :: tally
   def tally(game), do:
     %{
       game_state: game.game_state,
@@ -40,6 +48,7 @@ defmodule Hangman.Game do
   # Aux Functs  #
   ###############
 
+  @spec accept_move(Game.t, String.t, boolean) :: Game.t
   defp accept_move(game, _guess, _already_guesses = true), do:
     Map.put(game, :game_state, :already_used)
 
@@ -48,6 +57,7 @@ defmodule Hangman.Game do
     |> Map.put(:used, MapSet.put(game.used, guess))
     |> score_guess(Enum.member?(game.letters, guess))
 
+  @spec score_guess(Game.t, boolean) :: Game.t
   defp score_guess(game, _good_guess = true) do
     new_state = MapSet.new(game.letters)
     |> MapSet.subset?(game.used)
@@ -66,18 +76,18 @@ defmodule Hangman.Game do
     }
   end
 
+  @spec maybe_won(boolean) :: :won | :good_guess
   defp maybe_won(true),   do: :won
   defp maybe_won(false),  do: :good_guess
 
+  @spec reveal_guessed([String.t], MapSet.t) :: [String.t]
+  defp reveal_guessed(letters, used), do:
+    Enum.map(
+      letters,
+      fn letter -> reveal_letter(letter, MapSet.member?(used, letter)) end
+    )
 
-
-  defp reveal_guessed(letters, used) do
-    letters
-    |> Enum.map(fn letter -> reveal_letter(letter, MapSet.member?(used, letter)) end)
-  end
-
+  @spec reveal_letter(String.t, boolean) :: String.t
   defp reveal_letter(letter, _in_word = true),    do: letter
   defp reveal_letter(_letter, _in_word = false),  do: "_"
-
-
 end
