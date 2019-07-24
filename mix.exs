@@ -20,7 +20,11 @@ defmodule Hangman.MixProject do
 
   defp deps do
     [
-      { :dictionary, path: "../dictionary" }
+      { :dictionary,    path: "../dictionary" },
+      { :typed_struct,  "~> 0.1.4"            },
+
+      { :dialyxir,        "~> 0.5.1", only: [:test, :dev],  runtime: false  },
+      { :mix_test_watch,  "~> 0.8",   only: [:dev],         runtime: false  }
     ]
   end
 end
