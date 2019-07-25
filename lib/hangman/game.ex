@@ -19,7 +19,8 @@ defmodule Hangman.Game do
   @type tally :: %{
     game_state: :already_used | :bad_guess | :good_guess | :lost | :won,
     turns_left: pos_integer,
-    letters:    [String.t]
+    letters:    [String.t],
+    guesses:    [String.t]
   }
 
   ###############
@@ -46,7 +47,8 @@ defmodule Hangman.Game do
     %{
       game_state: game.game_state,
       turns_left: game.turns_left,
-      letters:    reveal_guessed(game.letters, game.used)
+      letters:    reveal_guessed(game.letters, game.used),
+      guesses:    MapSet.to_list(game.used)
     }
 
   ###############
