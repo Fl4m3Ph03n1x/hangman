@@ -24,7 +24,8 @@ defmodule Hangman.MixProject do
       { :typed_struct,  "~> 0.1.4"            },
 
       { :dialyxir,        "~> 0.5.1", only: [:test, :dev],  runtime: false  },
-      { :mix_test_watch,  "~> 0.8",   only: [:dev],         runtime: false  }
+      { :mix_test_watch,  "~> 0.8",   only: [:dev],         runtime: false  },
+      { :credo,           "~> 1.0.0", only: [:dev, :test],  runtime: false  }
     ]
   end
 end
