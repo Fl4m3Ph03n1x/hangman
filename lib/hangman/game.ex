@@ -1,4 +1,9 @@
 defmodule Hangman.Game do
+  @moduledoc """
+  Logic for the Hangman game. Contains the state machine that decides what
+  actions are possible and the consequences of such actions.
+  """
+
   use TypedStruct
 
   alias __MODULE__
@@ -59,9 +64,11 @@ defmodule Hangman.Game do
 
   @spec score_guess(Game.t, boolean) :: Game.t
   defp score_guess(game, _good_guess = true) do
-    new_state = MapSet.new(game.letters)
-    |> MapSet.subset?(game.used)
-    |> maybe_won()
+    new_state =
+      game.letters
+      |> MapSet.new()
+      |> MapSet.subset?(game.used)
+      |> maybe_won()
 
     Map.put(game, :game_state, new_state)
   end
@@ -70,7 +77,7 @@ defmodule Hangman.Game do
     Map.put(game, :game_state, :lost)
 
   defp score_guess(game = %Game{turns_left: turns_left}, _good_guess = false) do
-    %Game{ game |
+    %Game{game |
       game_state: :bad_guess,
       turns_left: turns_left - 1
     }
