@@ -35,12 +35,14 @@ defmodule Hangman.Game do
   def new_game, do:
     new_game(Dictionary.random_word())
 
-  @spec make_move(Game.t, String.t) :: Game.t
+  @spec make_move(Game.t, String.t) :: {Game.t, tally}
   def make_move(%Game{game_state: state} = game, _guess)
-  when state in [:won, :lost], do: game
+  when state in [:won, :lost], do: return_with_tally(game)
 
   def make_move(game, guess), do:
-    accept_move(game, guess, MapSet.member?(game.used, guess))
+    game
+    |> accept_move(guess, MapSet.member?(game.used, guess))
+    |> return_with_tally()
 
   @spec tally(Game.t) :: tally
   def tally(game), do:
@@ -56,13 +58,16 @@ defmodule Hangman.Game do
   ###############
 
   @spec accept_move(Game.t, String.t, boolean) :: Game.t
-  defp accept_move(game, _guess, _already_guesses = true), do:
+  defp accept_move(game, _guess, _already_guessed = true), do:
     Map.put(game, :game_state, :already_used)
 
-  defp accept_move(game, guess, _already_guesses = false), do:
+  defp accept_move(game, guess, _already_guessed = false), do:
     game
     |> Map.put(:used, MapSet.put(game.used, guess))
     |> score_guess(Enum.member?(game.letters, guess))
+
+  @spec return_with_tally(Gamt.t) :: {Gamt.t, tally}
+  defp return_with_tally(game), do: {game, tally(game)}
 
   @spec score_guess(Game.t, boolean) :: Game.t
   defp score_guess(game, _good_guess = true) do

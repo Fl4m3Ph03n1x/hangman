@@ -5,14 +5,18 @@ defmodule Hangman do
   """
 
   alias Hangman.Game
+  alias Hangman.{Server, Supervisor}
 
-  defdelegate new_game(),             to: Game
-  defdelegate tally(game),            to: Game
-
-  @spec make_move(Game.t, String.t) :: {Game.t, Game.tally}
-  def make_move(game, guess) do
-    game = Game.make_move(game, guess)
-    {game, tally(game)}
+  @spec new_game :: pid
+  def new_game do
+    {:ok, pid} = DynamicSupervisor.start_child(Supervisor, Server)
+    pid
   end
+
+  @spec tally(pid) :: Game.tally
+  def tally(pid), do: GenServer.call(pid, {:tally})
+
+  @spec make_move(pid, String.t) :: Game.tally
+  def make_move(pid, guess), do: GenServer.call(pid, {:make_move, guess})
 
 end
