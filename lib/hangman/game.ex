@@ -10,15 +10,15 @@ defmodule Hangman.Game do
   alias Dictionary
 
   typedstruct enforce: true, opaque: true do
-    field :turns_left,  pos_integer,  default: 7
-    field :game_state,  atom,         default: :initializing
-    field :letters,     list,         default: []
-    field :used,        MapSet.t,     default: MapSet.new()
+    field :turns_left,  non_neg_integer,  default: 7
+    field :game_state,  atom,             default: :initializing
+    field :letters,     list,             default: []
+    field :used,        MapSet.t,         default: MapSet.new()
   end
 
   @type tally :: %{
     game_state: :already_used | :bad_guess | :good_guess | :lost | :won,
-    turns_left: pos_integer,
+    turns_left: non_neg_integer,
     letters:    [String.t],
     guesses:    [String.t]
   }
