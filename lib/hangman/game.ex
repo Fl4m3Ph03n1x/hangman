@@ -66,7 +66,7 @@ defmodule Hangman.Game do
     |> Map.put(:used, MapSet.put(game.used, guess))
     |> score_guess(Enum.member?(game.letters, guess))
 
-  @spec return_with_tally(Gamt.t) :: {Gamt.t, tally}
+  @spec return_with_tally(Game.t) :: {Game.t, tally}
   defp return_with_tally(game), do: {game, tally(game)}
 
   @spec score_guess(Game.t, boolean) :: Game.t
